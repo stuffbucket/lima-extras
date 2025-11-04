@@ -1,7 +1,16 @@
 # Debian Trixie Desktop - VZ with XFCE, SPICE agent, GUI, and audio
 # Includes clipboard sharing, auto-login, and graphical display
 
+minimumLimaVersion: 1.1.0
+
 vmType: vz
+
+# Debian Trixie (13) latest cloud images
+images:
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
+    arch: "x86_64"
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-arm64.qcow2"
+    arch: "aarch64"
 
 video:
   display: "vz"
@@ -12,12 +21,6 @@ video:
 audio:
   device: "vz"
 
-images:
-  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
-    arch: "x86_64"
-  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-arm64.qcow2"
-    arch: "aarch64"
-
 cpus: 4
 memory: "8GiB"
 disk: "50GiB"
@@ -27,6 +30,8 @@ mounts:
     writable: false
   - location: "/tmp/lima"
     writable: true
+
+mountTypesUnsupported: [9p]
 
 ssh:
   localPort: 0

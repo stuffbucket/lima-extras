@@ -1,7 +1,16 @@
 # Debian Trixie KDE Plasma Desktop - High-performance VZ configuration
 # Full-featured desktop with clipboard, audio, auto-login, and premium UX
 
+minimumLimaVersion: 1.1.0
+
 vmType: vz
+
+# Debian Trixie (13) latest cloud images
+images:
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
+    arch: "x86_64"
+  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-arm64.qcow2"
+    arch: "aarch64"
 
 video:
   display: "vz"
@@ -14,12 +23,6 @@ video:
 audio:
   device: "vz"
 
-images:
-  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
-    arch: "x86_64"
-  - location: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-arm64.qcow2"
-    arch: "aarch64"
-
 cpus: 6
 memory: "12GiB"
 disk: "80GiB"
@@ -29,6 +32,8 @@ mounts:
     writable: false
   - location: "/tmp/lima"
     writable: true
+
+mountTypesUnsupported: [9p]
 
 ssh:
   localPort: 0
@@ -83,7 +88,7 @@ provision:
       retry_command env DEBIAN_FRONTEND=noninteractive apt-get install -y \
         dbus-x11 \
         pulseaudio \
-        chromium \
+        firefox-esr \
         fonts-noto \
         fonts-noto-color-emoji
 
@@ -302,31 +307,19 @@ provision:
       Location=Everywhere
       KDEEOF
 
-      # Set Chromium as default browser
+      # Set Firefox as default browser
       cat > ~/.config/mimeapps.list <<'KDEEOF'
       [Default Applications]
-      text/html=chromium.desktop
-      x-scheme-handler/http=chromium.desktop
-      x-scheme-handler/https=chromium.desktop
-      x-scheme-handler/about=chromium.desktop
-      x-scheme-handler/unknown=chromium.desktop
+      text/html=firefox-esr.desktop
+      x-scheme-handler/http=firefox-esr.desktop
+      x-scheme-handler/https=firefox-esr.desktop
+      x-scheme-handler/about=firefox-esr.desktop
+      x-scheme-handler/unknown=firefox-esr.desktop
       KDEEOF
 
-      # Configure Chromium for better VM experience
-      mkdir -p ~/.config/chromium/Default
-      cat > ~/.config/chromium/Default/Preferences <<'KDEEOF'
-      {
-        "profile": {
-          "password_manager_enabled": false,
-          "default_content_setting_values": {
-            "notifications": 2
-          }
-        },
-        "browser": {
-          "show_home_button": true
-        }
-      }
-      KDEEOF
+      # Configure Firefox for better VM experience
+      mkdir -p ~/.mozilla/firefox
+      # Firefox profile will be created on first launch
 
   - mode: system
     script: |
@@ -342,54 +335,19 @@ provision:
       aplay -l || echo "Run as user to see audio devices"
 
 message: |-
-  🚀 Debian Trixie KDE Plasma Desktop - Premium Configuration
-
-  ✨ Installed Features:
-  - ✅ KDE Plasma Desktop (Full Desktop Environment)
-  - ✅ 1920x1080 High-Resolution Display
-  - ✅ Auto-login (No Password Required)
-  - ✅ VS Code Insiders (code-insiders command available)
-  - ✅ Git (Full development tooling)
-  - ✅ Chromium Browser (Default)
-  - ✅ Clipboard Sharing (Auto-enabled by Guest Agent)
-  - ✅ Audio Support (PulseAudio + VirtIO-Sound)
-  - ✅ Essential Apps: Konsole, Dolphin, Kate
-  - ⚙️  Optional Apps: Ark, Gwenview, Okular, System Monitor (via kde-standard)
-  - ✅ Optimized Performance Settings
-
-  🎨 Desktop Configuration:
-  - Breeze theme with smooth animations
-  - 6 CPUs, 12GB RAM for responsive performance
-  - 80GB disk space
-  - Noto fonts with emoji support
-
-  🔧 Performance Optimizations:
-  - PulseAudio configured for low-latency audio
-  - SPICE clipboard auto-enabled by guest agent
-  - KDE compositor enabled with balanced animation speed
-  - Optimized sample rates (48kHz/44.1kHz)
-  - Passwordless sudo enabled
-  - Screen lock and power management disabled (always-on VM)
-  - Baloo file indexing disabled (saves CPU/disk I/O)
-  - KDE Wallet configured for auto-unlock (supports browser SSO)
-  - Bluetooth services disabled (no hardware)
-  - Chromium pre-configured (password manager off, notifications blocked)
-
-  ⚠️  Note: VZ audio requires virtio_snd kernel module. Check if Debian Trixie
-  includes this module. If audio doesn't work, use QEMU+SPICE as alternative.
-
-  🚀 Launch Command:
-    limactl start --name=plasma examples/debian-trixie-plasma.yaml
-
-  💻 Remote Development:
-    # SSH into the VM for terminal work
+  Debian Trixie KDE Plasma Desktop - VZ Configuration
+  - High-performance VZ VM configuration (6 vCPUs, 12GB RAM, 80GB disk)
+  - 1920x1080px display, clipboard sharing, audio, auto-login, and premium UX
+  - Read-only mount of home directory, writable /tmp/lima for user data
+ 
+  Installed software:
+  - KDE Plasma desktop environment w/ standard apps
+  - Firefox ESR (default browser), VS Code Insiders
+  
+  Usage:
+    limactl start --name=plasma vm/templates/debian-trixie-plasma.yaml
     limactl shell plasma
 
-    # Get SSH connection info for VS Code Remote-SSH
-    limactl show-ssh plasma
-
-    # VS Code Insiders is pre-installed in the VM
-    # Use Remote-SSH extension to connect from host VS Code
-
-  The VM will reboot automatically to start KDE Plasma.
-  After reboot, you'll be automatically logged in with full desktop access!
+  Configuration:
+  - Auto-login enabled (password: lima)
+  - Passwordless sudo for user
